@@ -33,7 +33,8 @@ class AVLNode(object):
     """
 
     def is_real_node(self):
-        return False
+        if self.height == -1:
+            return False
 
 
 """
@@ -192,10 +193,3 @@ class AVLTree(object):
         return None
 
 
-NewTree = AVLTree()
-newroot = AVLNode(1, "yess")
-newroot.left = AVLNode(0, "lefty")
-newroot.right = AVLNode(2, "righty")
-NewTree.root = newroot
-
-print(AVLTree.search(NewTree, 2))
