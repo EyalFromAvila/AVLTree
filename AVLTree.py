@@ -5,7 +5,7 @@
 # name2: Iakov Odesser
 # username2: iakovodesser
 
-
+import math
 """A class represnting a node in an AVL tree"""
 
 
@@ -84,9 +84,29 @@ class AVLTree(object):
     """
 
     def finger_search(self, key):
-        return None, -1
 
-    """inserts a new node into the dictionary with corresponding key and value (starting at the root)
+    # Start at the smallest node
+    current = self.minimum
+    if not current:
+        return None, -1  # Tree is empty
+
+    edges_passed = 0
+
+    # Climb up the tree until a node's subtree is larger than k
+    while current.parent and current.height < math.log2(key):
+        current = current.parent
+        edges_passed += 1
+
+    # Perform the regular search starting from this node
+    result_key, result_edges = self.search_from_node(current, key)
+    if result_key is not None:
+        # Add the edges passed during the initial climb
+        return result_key, edges_passed + result_edges
+
+    return None, -1  # Key not found
+
+
+"""inserts a new node into the dictionary with corresponding key and value (starting at the root)
 
     @type key: int
     @pre: key currently does not appear in the dictionary
