@@ -7,8 +7,6 @@
 
 import math
 """A class represnting a node in an AVL tree"""
-
-
 class AVLNode(object):
     """Constructor, you are allowed to add more fields.
 
@@ -25,6 +23,8 @@ class AVLNode(object):
         self.right = None
         self.parent = None
         self.height = -1
+        self.max = None
+        self.size = 0
 
     """returns whether self is not a virtual node 
 
@@ -40,8 +40,6 @@ class AVLNode(object):
 """
 A class implementing an AVL tree.
 """
-
-
 class AVLTree(object):
     """
     Constructor, you are allowed to add more fields.
@@ -49,13 +47,14 @@ class AVLTree(object):
 
     def __init__(self):
         self.root = None
+        self.max = None
+        self.external = None
 
     def _height_difference(self, node):
-        if node.is_real_node:
-            return node.left.height - node.right.height
+        return node.left.height - node.right.height
 
 
-"""searches for a node in the dictionary corresponding to the key (starting at the root)
+    """searches for a node in the dictionary corresponding to the key (starting at the root)
         
     @type key: int
     @param key: a key to be searched
@@ -64,21 +63,19 @@ class AVLTree(object):
     and e is the number of edges on the path between the starting node and ending node+1.
     """
 
-"""time complexity O(logn) since tree is AVL hence balanced"""
+    def search(self, key):
+        return self.root.search_from_node(key, 0)
 
+    def search_from_node(self, target_key, depth):
+        if self is self.external:
+            return None, depth + 1
+        if self.key == target_key:
+            return self, depth + 1
+        if self.key < target_key:
+            return self.left.search_from_node(target_key, depth + 1)
+        if self.key > target_key:
+            return self.right.search_from_node(target_key, depth + 1)
 
-def search(self, key):
-    def search_helper(node, target_key, depth):
-        if node is None:
-            return None, -1
-        if node.key == target_key:
-            return node, depth
-        if target_key < node.key:
-            return search_helper(node.left, target_key, depth + 1)
-        else:
-            return search_helper(node.right, target_key, depth + 1)
-
-        return search_helper(self.root, key, 0)
 
     """searches for a node in the dictionary corresponding to the key, starting at the max
         
@@ -90,28 +87,19 @@ def search(self, key):
     """
 
     def finger_search(self, key):
-
-        # Start at the smallest node
-        current = self.minimum
-
-        if not current:
-        return None, -1  # Tree is empty
-
-    edges_passed = 0
+        current = self.max
+        edges_passed = 0
 
     # Climb up the tree until a node's subtree is larger than k
-    while current.parent and current.height < math.log2(key):
-        current = current.parent
-        edges_passed += 1
+        while current.parent and current.size < key:
+            current = current.parent
+            edges_passed += 1
 
     # Perform the regular search starting from this node
-    result_key, result_edges = self.search_from_node(current, key)
-    if result_key is not None:
-        # Add the edges passed during the initial climb
-        return result_key, edges_passed + result_edges
+        result_key, result_edges = current.search_from_node(self, edges_passed)
+        result_edges += edges_passed
 
-    return None, -1  # Key not found
-
+        return result_key, 1 + result_edges
 
     """inserts a new node into the dictionary with corresponding key and value (starting at the root)
 
