@@ -5,7 +5,7 @@
 # name2: Iakov Odesser
 # username2: iakovodesser
 
-
+import math
 """A class represnting a node in an AVL tree"""
 
 
@@ -78,35 +78,53 @@ def search(self, key):
         else:
             return search_helper(node.right, target_key, depth + 1)
 
-    return search_helper(self.root, key, 0)
+        return search_helper(self.root, key, 0)
+
+    """searches for a node in the dictionary corresponding to the key, starting at the max
+        
+    @type key: int
+    @param key: a key to be searched
+    @rtype: (AVLNode,int)
+    @returns: a tuple (x,e) where x is the node corresponding to key (or None if not found),
+    and e is the number of edges on the path between the starting node and ending node+1.
+    """
+
+    def finger_search(self, key):
+
+        # Start at the smallest node
+        current = self.minimum
+
+        if not current:
+        return None, -1  # Tree is empty
+
+    edges_passed = 0
+
+    # Climb up the tree until a node's subtree is larger than k
+    while current.parent and current.height < math.log2(key):
+        current = current.parent
+        edges_passed += 1
+
+    # Perform the regular search starting from this node
+    result_key, result_edges = self.search_from_node(current, key)
+    if result_key is not None:
+        # Add the edges passed during the initial climb
+        return result_key, edges_passed + result_edges
+
+    return None, -1  # Key not found
 
 
-"""searches for a node in the dictionary corresponding to the key, starting at the max
-    
-@type key: int
-@param key: a key to be searched
-@rtype: (AVLNode,int)
-@returns: a tuple (x,e) where x is the node corresponding to key (or None if not found),
-and e is the number of edges on the path between the starting node and ending node+1.
-"""
+    """inserts a new node into the dictionary with corresponding key and value (starting at the root)
 
-
-def finger_search(self, key):
-    return None, -1
-
-
-"""inserts a new node into the dictionary with corresponding key and value (starting at the root)
-
-@type key: int
-@pre: key currently does not appear in the dictionary
-@param key: key of item that is to be inserted to self
-@type val: string
-@param val: the value of the item
-@rtype: (AVLNode,int,int)
-@returns: a 3-tuple (x,e,h) where x is the new node,
-e is the number of edges on the path between the starting node and new node before rebalancing,
-and h is the number of PROMOTE cases during the AVL rebalancing
-"""
+    @type key: int
+    @pre: key currently does not appear in the dictionary
+    @param key: key of item that is to be inserted to self
+    @type val: string
+    @param val: the value of the item
+    @rtype: (AVLNode,int,int)
+    @returns: a 3-tuple (x,e,h) where x is the new node,
+    e is the number of edges on the path between the starting node and new node before rebalancing,
+    and h is the number of PROMOTE cases during the AVL rebalancing
+    """
 
 def search_for_insert(self, key):
     if not self.root.is_real_node:
@@ -121,8 +139,7 @@ def insert(self, key, val):
 
     return None, -1, -1
 
-
-"""inserts a new node into the dictionary with corresponding key and value, starting at the max
+    """inserts a new node into the dictionary with corresponding key and value, starting at the max
 
 @type key: int
 @pre: key currently does not appear in the dictionary
@@ -139,90 +156,78 @@ and h is the number of PROMOTE cases during the AVL rebalancing
 def finger_insert(self, key, val):
     return None, -1, -1
 
+    """deletes node from the dictionary
 
-"""deletes node from the dictionary
+    @type node: AVLNode
+    @pre: node is a real pointer to a node in self
+    """
 
-@type node: AVLNode
-@pre: node is a real pointer to a node in self
-"""
+    def delete(self, node):
+        return
 
+    """joins self with item and another AVLTree
 
-def delete(self, node):
-    return
+    @type tree2: AVLTree 
+    @param tree2: a dictionary to be joined with self
+    @type key: int 
+    @param key: the key separting self and tree2
+    @type val: string
+    @param val: the value corresponding to key
+    @pre: all keys in self are smaller than key and all keys in tree2 are larger than key,
+    or the opposite way
+    """
 
+    def join(self, tree2, key, val):
+        return
 
-"""joins self with item and another AVLTree
+    """splits the dictionary at a given node
 
-@type tree2: AVLTree 
-@param tree2: a dictionary to be joined with self
-@type key: int 
-@param key: the key separting self and tree2
-@type val: string
-@param val: the value corresponding to key
-@pre: all keys in self are smaller than key and all keys in tree2 are larger than key,
-or the opposite way
-"""
+    @type node: AVLNode
+    @pre: node is in self
+    @param node: the node in the dictionary to be used for the split
+    @rtype: (AVLTree, AVLTree)
+    @returns: a tuple (left, right), where left is an AVLTree representing the keys in the 
+    dictionary smaller than node.key, and right is an AVLTree representing the keys in the 
+    dictionary larger than node.key.
+    """
 
+    def split(self, node):
+        return None, None
 
-def join(self, tree2, key, val):
-    return
+    """returns an array representing dictionary 
 
+    @rtype: list
+    @returns: a sorted list according to key of touples (key, value) representing the data structure
+    """
 
-"""splits the dictionary at a given node
+    def avl_to_array(self):
+        return None
 
-@type node: AVLNode
-@pre: node is in self
-@param node: the node in the dictionary to be used for the split
-@rtype: (AVLTree, AVLTree)
-@returns: a tuple (left, right), where left is an AVLTree representing the keys in the 
-dictionary smaller than node.key, and right is an AVLTree representing the keys in the 
-dictionary larger than node.key.
-"""
+    """returns the node with the maximal key in the dictionary
 
+    @rtype: AVLNode
+    @returns: the maximal node, None if the dictionary is empty
+    """
 
-def split(self, node):
-    return None, None
+    def max_node(self):
+        return None
 
+    """returns the number of items in dictionary 
 
-"""returns an array representing dictionary 
+    @rtype: int
+    @returns: the number of items in dictionary 
+    """
 
-@rtype: list
-@returns: a sorted list according to key of touples (key, value) representing the data structure
-"""
+    def size(self):
+        return -1
 
+    """returns the root of the tree representing the dictionary
 
-def avl_to_array(self):
-    return None
+    @rtype: AVLNode
+    @returns: the root, None if the dictionary is empty
+    """
 
-
-"""returns the node with the maximal key in the dictionary
-
-@rtype: AVLNode
-@returns: the maximal node, None if the dictionary is empty
-"""
-
-
-def max_node(self):
-    return None
-
-
-"""returns the number of items in dictionary 
-
-@rtype: int
-@returns: the number of items in dictionary 
-"""
-
-
-def size(self):
-    return -1
+    def get_root(self):
+        return None
 
 
-"""returns the root of the tree representing the dictionary
-
-@rtype: AVLNode
-@returns: the root, None if the dictionary is empty
-"""
-
-
-def get_root(self):
-    return None
