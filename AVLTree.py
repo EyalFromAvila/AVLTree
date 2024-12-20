@@ -452,7 +452,7 @@ class AVLTree(object):
             return tree2, self
 
     def join(self, tree2, key, val):
-        # naming
+        #  naming
         big_keys_tree, small_keys_tree = self.key_size_matters(tree2)
         taller_tree, shorter_tree = self.height_matters(tree2)
         k = AVLNode(key, val)
