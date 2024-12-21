@@ -6,9 +6,13 @@ Yashatree = AVLTree()
 
 # Insert nodes
 Yashatree.insert(5, 'v5')
+#Yashatree.insert_as_child(Yashatree.root, AVLNode(7, 'v7'), 0)
+#Yashatree.insert_as_child(Yashatree.root, AVLNode(6, 'v6'), 0)
+Yashatree.insert(6, 'v6')
 Yashatree.insert(7, 'v7')
-Yashatree.insert(4, 'v4')
 
+Yashatree.insert(4, 'v4')
+Yashatree.insert(2, 'v2')
 
 
 

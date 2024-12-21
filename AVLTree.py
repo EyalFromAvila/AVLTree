@@ -139,24 +139,31 @@ class AVLTree(object):
         promotions = 0
 
         attach_to = parent_node
-        while attach_to and attach_to.is_real_node():
+        while attach_to.is_real_node():
+            print("this time it's", attach_to.key)
             if child_node.key < attach_to.key:
                 path += 1
+                if not attach_to.left.is_real_node():  # Found the insertion point
+                    break
                 attach_to = attach_to.left
             else:
                 path += 1
+                if not attach_to.right.is_real_node():  # Found the insertion point
+                    break
                 attach_to = attach_to.right
 
-        print("attach_to", attach_to.key)
-        child_node.parent = attach_to
-        if child_node.parent.key > child_node.key:
-            child_node.parent.left = child_node
-        else:
-            child_node.parent.right = child_node
+        print("attach_to:", attach_to.key)
 
+        # Attach the child node to its parent
+        child_node.parent = attach_to
+        if child_node.key < attach_to.key:
+            attach_to.left = child_node
+        else:
+            attach_to.right = child_node
+
+        # Initialize the new node
         child_node.left = child_node.right = self.external
         child_node.height = 0
-        attach_to.parent = None
         # Adjust heights and check for rebalancing
         current = parent_node
         while current:
@@ -185,11 +192,14 @@ class AVLTree(object):
         inserted_node.left = self.external
         inserted_node.right = self.external
         if not self.root:
+            print('here we are')
             self.root = inserted_node
+            self.root.left = self.root.right = self.external
             self.max = inserted_node
             self.size = 1
             return inserted_node, 0, 0
         else:
+            print('now here')
             self.size += 1
             return self.insert_as_child(self.root, inserted_node, 0)
 
