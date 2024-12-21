@@ -25,8 +25,6 @@ class AVLNode(object):
         self.parent = None
         self.height = -1
 
-
-
     """returns whether self is not a virtual node 
 
     @rtype: bool
@@ -64,7 +62,8 @@ class AVLTree(object):
         self.root = None
         self.max = None
         self.size = 0
-        self.external = None
+        self.external = AVLNode(None, None)
+        self.external.height = -1
 
     """searches for a node in the dictionary corresponding to the key (starting at the root)
 
@@ -81,9 +80,10 @@ class AVLTree(object):
     """
     Helper function that kinda does all the work recursively 
     """
+
     def search_from_node(self, node, key, depth):
         # base cases
-        if key is None:
+        if node is None:
             return None, depth
         if node.key == key:
             return node, depth
@@ -133,52 +133,51 @@ class AVLTree(object):
     """
     Helper function that kinda does all the work
     """
-    def insert_as_child(self, parent_node, child_node, path): #DOESN'T INCREMENT SIZE!!!
+
+    def insert_as_child(self, parent_node, child_node, path):
         node_to_rebalance = None
         promotions = 0
 
-        # key is smaller than root
-        if child_node.key < parent_node.key:
-            if not parent_node.left:
-                parent_node.left = child_node
-                child_node.parent = parent_node
-                # do promotions
-                if parent_node.height == 0:
-                    current = parent_node
-                    while current:
-                        current.height = current.max_children_height() + 1
-                        promotions += 1
-                        path += 1
-                        if not current.height_difference() in [-1, 0, 1]:
-                            node_to_rebalance = current
-                            break
-                        current = current.parent
+        attach_to = parent_node
+        while attach_to and attach_to.is_real_node():
+            if child_node.key < attach_to.key:
+                path += 1
+                attach_to = attach_to.left
             else:
-                self.insert_as_child(parent_node.left, child_node, path + 1)
+                path += 1
+                attach_to = attach_to.right
 
-            # key is bigger than root
-            if child_node.key > parent_node.key:
-                if not parent_node.right:
-                    parent_node.right = child_node
-                    child_node.parent = parent_node
-                    if parent_node.height == 0:
-                        current = parent_node
-                        while current:
-                            current.height = current.max_children_height() + 1
-                            current.size += 1
-                            promotions += 1
-                            path += 1
-                            if not current.height_difference() in [-1, 0, 1]:
-                                node_to_rebalance = current
-                                break
-                            current = current.parent
-                else:
-                    self.insert_as_child(parent_node.right, child_node, path + 1)
+        print("attach_to", attach_to.key)
+        child_node.parent = attach_to
+        if child_node.parent.key > child_node.key:
+            child_node.parent.left = child_node
+        else:
+            child_node.parent.right = child_node
 
-            if node_to_rebalance:
-                self.rebalance(node_to_rebalance)
-            if child_node.key > self.max:
-                self.max = child_node.key
+        child_node.left = child_node.right = self.external
+        child_node.height = 0
+        attach_to.parent = None
+        # Adjust heights and check for rebalancing
+        current = parent_node
+        while current:
+            old_height = current.height
+            current.height = current.max_children_height() + 1
+            path += 1
+            if current.height != old_height:
+                promotions += 1
+            if not current.height_difference() in [-1, 0, 1]:
+                node_to_rebalance = current
+                break
+            current = current.parent
+
+        # Rebalance if necessary
+        if node_to_rebalance:
+            self.rebalance(node_to_rebalance)
+
+        # Update max node if necessary
+        if self.max is None or not self.max.is_real_node() or child_node.key > self.max.key:
+            self.max = child_node
+
         return child_node, path, promotions
 
     def insert(self, key, val):
@@ -197,6 +196,7 @@ class AVLTree(object):
     """
     Helper function to keep track of heights 
     """
+
     def recompute_heights(self, start_from_node):
         changed = True
         node = start_from_node
@@ -209,6 +209,7 @@ class AVLTree(object):
     """
     Helper function to restore balance 
     """
+
     def rebalance(self, node_to_rebalance):
         A = node_to_rebalance  # The unbalanced node
         F = A.parent  # The parent of the unbalanced node
@@ -403,14 +404,14 @@ class AVLTree(object):
         # Rebalancing and heights fixing
         if parent:
             self.recompute_heights(parent)  # Update heights starting from the parent
-            while parent:
-                self.rebalance(parent)  # Rebalance each ancestor node
-                parent = parent.parent
+            self.rebalance(parent)  # Rebalance each ancestor node
 
         self.size -= 1
+
     """
     Helper function to replace a node in the tree with a new node.
     """
+
     def switcheroo(self, old_node, new_node):
         parent = old_node.parent
         if parent:
@@ -439,6 +440,7 @@ class AVLTree(object):
     """
     Helper functions to see which tree is more attractive
     """
+
     def key_size_matters(self, tree2):
         if self.root.key > tree2.root.key:
             return self, tree2
@@ -501,7 +503,6 @@ class AVLTree(object):
         self.rebalance(curr)
         self.root = taller_tree.root
 
-
     """splits the dictionary at a given node
 
     @type node: AVLNode
@@ -514,7 +515,48 @@ class AVLTree(object):
     """
 
     def split(self, node):
-        return None, None
+        return self.rec_split(self.root, node.key)
+
+    """
+    Helper function that does all the work recursively.
+    """
+
+    def rec_split(self, root, key):
+
+        if root is None or not root.is_real_node():
+            return None, None
+
+        if root.key == key:
+            # everything in root.left is < key
+            left_sub = root.left if root.left.is_real_node() else None
+            # everything in root.right is > key
+            right_sub = root.right if root.right.is_real_node() else None
+
+            # detach them from root
+            root.left = self.external
+            root.right = self.external
+
+            return left_sub, right_sub
+
+        elif root.key < key:
+            # root belongs to the left side
+            split_left, split_right = self.rec_split(root.right, key)
+            root.right = split_left if split_left else self.external
+            if root.right.is_real_node():
+                root.right.parent = root
+            self.recompute_heights(root)
+            self.rebalance(root)
+            return root, split_right  # 'root' is the new left subtree
+
+        else:  # root.key > key
+            # root belongs to the right side
+            split_left, split_right = self.rec_split(root.left, key)
+            root.left = split_right if split_right else self.external
+            if root.left.is_real_node():
+                root.left.parent = root
+            self.recompute_heights(root)
+            self.rebalance(root)
+            return split_left, root
 
     """returns an array representing dictionary 
 
@@ -523,7 +565,18 @@ class AVLTree(object):
     """
 
     def avl_to_array(self):
-        return None
+        return self.in_order_plus(self.root)
+
+    def in_order_plus(self, node):
+        if node is None:  # Base case: Empty subtree
+            return []
+
+        # Combine results from left subtree, current node, and right subtree
+        left_part = self.in_order_plus(node.left)
+        current_part = [(node.key, node.val)]  # The current node as a tuple
+        right_part = self.in_order_plus(node.right)
+
+        return left_part + current_part + right_part
 
     """returns the node with the maximal key in the dictionary
 
@@ -532,7 +585,7 @@ class AVLTree(object):
     """
 
     def max_node(self):
-        return None
+        return self.max
 
     """returns the number of items in dictionary 
 
@@ -541,7 +594,7 @@ class AVLTree(object):
     """
 
     def size(self):
-        return -1
+        return self.size
 
     """returns the root of the tree representing the dictionary
 
@@ -550,4 +603,4 @@ class AVLTree(object):
     """
 
     def get_root(self):
-        return None
+        return self.root
