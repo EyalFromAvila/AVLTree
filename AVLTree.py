@@ -83,7 +83,7 @@ class AVLTree(object):
 
     def search_from_node(self, node, key, depth):
         # base cases
-        if node is None:
+        if node is None or not node.is_real_node():
             return None, depth
         if node.key == key:
             return node, depth
@@ -152,7 +152,6 @@ class AVLTree(object):
                     break
                 attach_to = attach_to.right
 
-        print("attach_to:", attach_to.key)
 
         # Attach the child node to its parent
         child_node.parent = attach_to
@@ -192,14 +191,13 @@ class AVLTree(object):
         inserted_node.left = self.external
         inserted_node.right = self.external
         if not self.root:
-            print('here we are')
             self.root = inserted_node
             self.root.left = self.root.right = self.external
             self.max = inserted_node
             self.size = 1
             return inserted_node, 0, 0
         else:
-            print('now here')
+
             self.size += 1
             return self.insert_as_child(self.root, inserted_node, 0)
 

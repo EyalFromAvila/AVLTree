@@ -13,6 +13,12 @@ Yashatree.insert(7, 'v7')
 
 Yashatree.insert(4, 'v4')
 Yashatree.insert(2, 'v2')
+Yashatree.insert(1, 'v1')
+Yashatree.insert(8, 'v8')
+Yashatree.insert(9, 'v9')
+Yashatree.insert(10, 'v10')
+Yashatree.insert(11, 'v11')
+Yashatree.insert(12, 'v12')
 
 
 
@@ -47,3 +53,5 @@ def print_avl_tree_asaf(node, space=0, level_spacing=5):
 
 print_avl_tree_asaf(Yashatree.root)
 print_avl_tree(Yashatree.root)
+Yashatree.recompute_heights(Yashatree.search(12))
+Yashatree.rebalance(Yashatree.search(12))
