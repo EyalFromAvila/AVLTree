@@ -40,6 +40,9 @@ class AVLNode(object):
     def max_children_height(self):
         return max(self.left.height, self.right.height)
 
+    def balance(self):
+        return self.left.height - self.right.height
+
 
 """
 A class implementing an AVL tree.
@@ -51,6 +54,20 @@ def get_successor(node):
     while current.left.is_real_node():
         current = current.left
     return current
+
+
+def search_from_node(node, key):
+    depth = 0
+    current = node
+    while current.is_real_node() and current:
+        if current.key == key:
+            return current, depth + 1
+        elif current.key > key:
+            current = current.left
+            depth += 1
+        elif current.key < key:
+            current = current.right
+            depth += 1
 
 
 class AVLTree(object):
@@ -75,24 +92,9 @@ class AVLTree(object):
     """
 
     def search(self, key):
-        return self.search_from_node(self.root, key, 1)
-
-    """
-    Helper function that kinda does all the work recursively 
-    """
-
-    def search_from_node(self, node, key, depth):
-        # base cases
-        if node is None or not node.is_real_node():
-            return None, depth
-        if node.key == key:
-            return node, depth
-
-        # process
-        if node.key < key:
-            return self.search_from_node(node.left, key, depth + 1)
-        if node.key > key:
-            return self.search_from_node(node.right, key, depth + 1)
+        if self.root is None:
+            return None, 0
+        return search_from_node(self.root, key)
 
     """searches for a node in the dictionary corresponding to the key, starting at the max
 
@@ -113,7 +115,7 @@ class AVLTree(object):
             edges_passed += 1
 
         # Perform the regular search starting from this node
-        result_key, result_edges = self.search_from_node(current, key, edges_passed)
+        result_key, result_edges = search_from_node(current, key)
 
         return result_key, 1 + result_edges
 
@@ -140,7 +142,6 @@ class AVLTree(object):
 
         attach_to = parent_node
         while attach_to.is_real_node():
-            print("this time it's", attach_to.key)
             if child_node.key < attach_to.key:
                 path += 1
                 if not attach_to.left.is_real_node():  # Found the insertion point
@@ -151,7 +152,6 @@ class AVLTree(object):
                 if not attach_to.right.is_real_node():  # Found the insertion point
                     break
                 attach_to = attach_to.right
-
 
         # Attach the child node to its parent
         child_node.parent = attach_to
@@ -210,8 +210,12 @@ class AVLTree(object):
         node = start_from_node
         while node and changed:
             old_height = node.height
+
+            print(node.key, "old height", old_height)
             node.height = node.max_children_height() + 1
             changed = node.height != old_height
+
+            print(node.key, "new height", node.height)
             node = node.parent
 
     """
