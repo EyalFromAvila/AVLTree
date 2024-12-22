@@ -51,16 +51,17 @@ A class implementing an AVL tree.
 
 def get_successor(node):
     current = node
-     # if there is a right child go right and all the way left
+    # if there is a right child go right and all the way left
     if current.right.is_real_node():
         current = current.right
         while current.left.is_real_node():
             current = current.left
         return current
+
     # else go up until there is a new right subtree
     while current.parent and current.parent.right == current:
         current = current.parent
-    return current.parent # returns the successor or none if node is the maximum
+    return current.parent  # returns the successor or none if node is the maximum
 
 
 def search_from_node(node, key):
@@ -217,12 +218,8 @@ class AVLTree(object):
         node = start_from_node
         while node and changed:
             old_height = node.height
-
-            print(node.key, "old height", old_height)
             node.height = node.max_children_height() + 1
             changed = node.height != old_height
-
-            print(node.key, "new height", node.height)
             node = node.parent
 
     """
