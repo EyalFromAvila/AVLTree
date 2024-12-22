@@ -43,10 +43,21 @@ class AVLNode(object):
     def balance(self):
         return self.left.height - self.right.height
 
+    def get_height(self):
+        return self.height
 
-"""
-A class implementing an AVL tree.
-"""
+def search_from_node(node, key):
+    depth = 0
+    current = node
+    while current.is_real_node() and current:
+        if current.key == key:
+            return current, depth + 1
+        elif current.key > key:
+            current = current.left
+            depth += 1
+        elif current.key < key:
+            current = current.right
+            depth += 1
 
 
 def get_successor(node):
@@ -62,20 +73,6 @@ def get_successor(node):
     while current.parent and current.parent.right == current:
         current = current.parent
     return current.parent  # returns the successor or none if node is the maximum
-
-
-def search_from_node(node, key):
-    depth = 0
-    current = node
-    while current.is_real_node() and current:
-        if current.key == key:
-            return current, depth + 1
-        elif current.key > key:
-            current = current.left
-            depth += 1
-        elif current.key < key:
-            current = current.right
-            depth += 1
 
 
 class AVLTree(object):
@@ -104,6 +101,9 @@ class AVLTree(object):
             return None, 0
         return search_from_node(self.root, key)
 
+    """Returns only the pointer to node"""
+    def pointer_only(self, key):
+        return self.search(key)[0]
     """searches for a node in the dictionary corresponding to the key, starting at the max
 
     @type key: int
@@ -171,8 +171,9 @@ class AVLTree(object):
         # Initialize the new node
         child_node.left = child_node.right = self.external
         child_node.height = 0
+
         # Adjust heights and check for rebalancing
-        current = parent_node
+        current = child_node
         while current:
             old_height = current.height
             current.height = current.max_children_height() + 1
@@ -225,7 +226,6 @@ class AVLTree(object):
     """
     Helper function to restore balance 
     """
-
     def rebalance(self, node_to_rebalance):
         A = node_to_rebalance  # The unbalanced node
         F = A.parent  # The parent of the unbalanced node
@@ -294,7 +294,7 @@ class AVLTree(object):
 
         # Left-Heavy Case
         else:
-            assert (node_to_rebalance.balance() == +2)
+            assert (node_to_rebalance.balance() == 2)
 
             # Left-Left (LL) Imbalance
             if node_to_rebalance.left.balance() >= 0:
