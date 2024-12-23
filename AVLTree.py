@@ -34,17 +34,12 @@ class AVLNode(object):
     def is_real_node(self):
         return self.height != -1
 
-    def height_difference(self):
-        return self.left.height - self.right.height
-
     def max_children_height(self):
         return max(self.left.height, self.right.height)
 
     def balance(self):
         return self.left.height - self.right.height
 
-    def get_height(self):
-        return self.height
 
 def search_from_node(node, key):
     depth = 0
@@ -117,13 +112,13 @@ class AVLTree(object):
         current = self.max
         edges_passed = 0
 
-        # Climb up the tree until a node's subtree is larger than k
-        while current.parent and current.size < key:
+        # Climb up the tree until k is in the subtree
+        while current.parent and current.key > key:
             current = current.parent
             edges_passed += 1
 
         # Perform the regular search starting from this node
-        result_key, result_edges = search_from_node(current, key)
+        result_key, result_edges = self.search_from_node(current, key, edges_passed)
 
         return result_key, 1 + result_edges
 
@@ -180,7 +175,7 @@ class AVLTree(object):
             path += 1
             if current.height != old_height:
                 promotions += 1
-            if not current.height_difference() in [-1, 0, 1]:
+            if not current.balance() in [-1, 0, 1]:
                 node_to_rebalance = current
                 break
             current = current.parent
@@ -370,11 +365,17 @@ class AVLTree(object):
 
     def finger_insert(self, key, val):
         new_node = AVLNode(key, val)
+
+        # deal with an empty tree
+        if not self.root:
+            inserted_node, path, promotes = self.insert(key, val)
+            return inserted_node, path, promotes
+        # else
         current = self.max
         upward_path = 0
 
-        # Climb up the tree until a node's subtree is larger than k
-        while current.parent and current.size < key:
+        # Climb up the tree until k the subtree where k should be inserted
+        while current.parent and current.key > key:
             current = current.parent
             upward_path += 1
 
@@ -396,9 +397,9 @@ class AVLTree(object):
         if not node.left.is_real_node() and not node.right.is_real_node():
             if parent:
                 if parent.left == node:
-                    parent.left = None
+                    parent.left = self.external
                 if parent.right == node:
-                    parent.right = None
+                    parent.right = self.external
 
             else:
                 self.root = None  # Node is root
@@ -414,13 +415,14 @@ class AVLTree(object):
         # Node has two children
         else:
             successor = get_successor(node)
-            node.key, node.val = successor.key, successor.val
+            node.key, node.value = successor.key, successor.value
             self.delete(successor)
 
         # Rebalancing and heights fixing
         if parent:
             self.recompute_heights(parent)  # Update heights starting from the parent
-            self.rebalance(parent)  # Rebalance each ancestor node
+            if not parent.balance() in [-1, 0, 1]:
+                self.rebalance(parent)  # Rebalance each ancestor node
 
         self.size -= 1
 
@@ -516,7 +518,8 @@ class AVLTree(object):
         # Recompute heights and rebalance
 
         self.recompute_heights(k)
-        self.rebalance(curr)
+        if curr.balance() in [-1, 0, 1]:
+            self.rebalance(curr)
         self.root = taller_tree.root
 
     """splits the dictionary at a given node
