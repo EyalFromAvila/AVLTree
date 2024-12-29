@@ -391,7 +391,7 @@ class AVLTree(object):
     """
 
     def delete(self, node):
-        parent = node.parent
+        parent = node.parent if node.parent else None
 
         # Node is leaf
         if not node.left.is_real_node() and not node.right.is_real_node():
@@ -482,8 +482,11 @@ class AVLTree(object):
         # Easy case: same size
         if abs(big_keys_tree.root.height - small_keys_tree.root.height) <= 1:
             k.left, k.right = small_keys_tree.root, big_keys_tree.root
+            small_keys_tree.root.parent = k
+            big_keys_tree.root.parent = k
             self.root = k
             k.height = k.max_children_height() + 1
+            return
 
         # Tough case: One tree is significantly taller
         curr = taller_tree.root
@@ -514,14 +517,19 @@ class AVLTree(object):
             if k.left.is_real_node():
                 k.left.parent = k
             curr.right = k
+
         k.parent = curr
+        self.root = taller_tree.root
         # Recompute heights and rebalance
 
-        self.recompute_heights(k)
-        if curr.balance() in [-1, 0, 1]:
-            self.rebalance(curr)
-        self.root = taller_tree.root
 
+        self.recompute_heights(k)
+        while True:
+            if not curr.balance() in [-1, 0, 1]:
+                self.rebalance(curr)
+                return
+            curr = curr.parent
+        return
     """splits the dictionary at a given node
 
     @type node: AVLNode
