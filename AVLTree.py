@@ -570,7 +570,8 @@ class AVLTree(object):
             if root.right.is_real_node():
                 root.right.parent = root
             self.recompute_heights(root)
-            self.rebalance(root)
+            if not root.balance() in [-1, 0, 1]:
+                self.rebalance(root)
             return root, split_right  # 'root' is the new left subtree
 
         else:  # root.key > key
@@ -580,7 +581,8 @@ class AVLTree(object):
             if root.left.is_real_node():
                 root.left.parent = root
             self.recompute_heights(root)
-            self.rebalance(root)
+            if not root.balance() in [-1, 0, 1]:
+                self.rebalance(root)
             return split_left, root
 
     """returns an array representing dictionary 

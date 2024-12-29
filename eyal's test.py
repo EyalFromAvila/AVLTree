@@ -17,13 +17,7 @@ eyaltree.insert(12, 12)
 eyaltree.insert(13, 13)
 eyaltree.insert(14, 14)
 eyaltree.insert(15, 15)
-print("eyaltree height is " + str(eyaltree.root.height))
 
-tree2 = AVLTree()
-tree2.insert(18, 18)
-tree2.insert(19, 19)
-tree2.insert(20, 20)
-print("tree2 height is " + str(tree2.root.height))
 # Print AVL tree
 def print_avl_tree(node, prefix="", is_left=True):
     underline = "\033[1m"
@@ -37,9 +31,4 @@ def print_avl_tree(node, prefix="", is_left=True):
     # Print the left subtree
     print_avl_tree(node.left, prefix + ("    " if is_left else "│   "), True)
 # Call the print function
-
-print_avl_tree(eyaltree.root)
-print_avl_tree(tree2.root)
-
-eyaltree.join(tree2, 17, 17)
 print_avl_tree(eyaltree.root)
