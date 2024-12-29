@@ -23,7 +23,7 @@ class AVLNode(object):
         self.left = None
         self.right = None
         self.parent = None
-        self.height = -1
+        self.height = 0
 
     """returns whether self is not a virtual node 
 
@@ -472,6 +472,18 @@ class AVLTree(object):
             return tree2, self
 
     def join(self, tree2, key, val):
+        # deal with an empty tree
+        if not tree2.root:
+            self.insert(key, val)
+            return
+        if not self.root:
+            tree2.insert(key, val)
+            self.root = tree2.root
+            self.size = tree2.size
+            self.max = tree2.max
+            self.external = tree2.external
+            return
+
         #  naming
         big_keys_tree, small_keys_tree = self.key_size_matters(tree2)
         taller_tree, shorter_tree = self.height_matters(tree2)
@@ -528,6 +540,9 @@ class AVLTree(object):
                 self.rebalance(curr)
             curr = curr.parent
         return
+
+
+
     """splits the dictionary at a given node
 
     @type node: AVLNode
@@ -540,7 +555,42 @@ class AVLTree(object):
     """
 
     def split(self, node):
-        return self.rec_split(self.root, node.key)
+        #return self.rec_split(self.root, node.key) ### (Yasha's version, archived for now)
+
+        #initiate the new trees
+        left = AVLTree()
+        left.root = node.left if node.left.is_real_node() else None
+        left.max = node.left.key if node.left.is_real_node() else None
+        right = AVLTree()
+        right.root = node.right if node.right.is_real_node() else None
+        right.max = node.right.key if node.right.is_real_node() else None
+        if not node.parent:
+            return left, right
+
+        # traverse up the tree until root, add right subtrees to right and left subtrees to left
+        temp_tree = AVLTree()
+        prev = node
+        curr = node.parent
+        while curr:
+            if curr.right == prev and curr.left.is_real_node():
+                temp_tree.root = curr.left
+                temp_tree.max = curr.left
+                left.join(temp_tree, curr.key, curr.value)
+            if curr.left == prev and curr.right.is_real_node():
+                temp_tree.root = curr.right
+                #to save complexity - will upadte max only once, in the end
+                right.join(temp_tree, curr.key, curr.value)
+            prev = curr
+            curr = curr.parent
+
+        #update right's max
+        if right.root:
+            curr = right.root
+            while curr.is_real_node():
+                right.max = curr
+                curr = curr.right
+
+        return left, right
 
     """
     Helper function that does all the work recursively.
