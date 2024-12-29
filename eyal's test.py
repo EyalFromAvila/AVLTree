@@ -15,8 +15,7 @@ eyaltree.insert(10, 10)
 eyaltree.insert(11, 11)
 eyaltree.insert(12, 12)
 eyaltree.insert(13, 13)
-eyaltree.insert(14, 14)
-eyaltree.insert(15, 15)
+
 
 # Print AVL tree
 def print_avl_tree(node, prefix="", is_left=True):
@@ -31,4 +30,8 @@ def print_avl_tree(node, prefix="", is_left=True):
     # Print the left subtree
     print_avl_tree(node.left, prefix + ("    " if is_left else "│   "), True)
 # Call the print function
-print_avl_tree(eyaltree.root)
+
+tree2 = AVLTree()
+
+tree2.join(eyaltree, 14, 14)
+print_avl_tree(tree2.root)
