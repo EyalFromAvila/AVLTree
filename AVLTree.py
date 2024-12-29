@@ -505,10 +505,10 @@ class AVLTree(object):
             if k.right.is_real_node():
                 k.right.parent = k
             curr.left = k
+
         else:
             while curr.height > target_height:
                 curr = curr.right
-
             # Attach shorter tree as right subtree of `k`
             k.right = shorter_tree.root
             if k.right.is_real_node():
@@ -522,12 +522,10 @@ class AVLTree(object):
         self.root = taller_tree.root
         # Recompute heights and rebalance
 
-
         self.recompute_heights(k)
-        while True:
+        while curr:
             if not curr.balance() in [-1, 0, 1]:
                 self.rebalance(curr)
-                return
             curr = curr.parent
         return
     """splits the dictionary at a given node
