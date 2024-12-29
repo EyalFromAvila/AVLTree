@@ -40,7 +40,7 @@ class AVLNode(object):
     def balance(self):
         return self.left.height - self.right.height
 
-
+# helper for search function
 def search_from_node(node, key):
     depth = 0
     current = node
@@ -54,7 +54,7 @@ def search_from_node(node, key):
             current = current.right
             depth += 1
 
-
+# helper for delete function
 def get_successor(node):
     current = node
     # if there is a right child go right and all the way left
@@ -233,7 +233,7 @@ class AVLTree(object):
                 B = A.right
                 C = B.right
 
-                assert (A.is_real_node() and B.is_real_node() and C.is_real_node())  # maybe delete this line later
+                assert (A.is_real_node() and B.is_real_node() and C.is_real_node())
 
                 # Left Rotation
                 A.right = B.left
@@ -260,7 +260,7 @@ class AVLTree(object):
                 B = A.right
                 C = B.left
 
-                assert (A.is_real_node() and B.is_real_node() and C.is_real_node())  # maybe delete this line later
+                assert (A.is_real_node() and B.is_real_node() and C.is_real_node())
 
                 # Right rotation on B, then left rotation on A
                 B.left = C.right
@@ -296,7 +296,7 @@ class AVLTree(object):
                 B = A.left
                 C = B.left
 
-                assert (A.is_real_node() and B.is_real_node() and C.is_real_node())  # maybe delete this line later
+                assert (A.is_real_node() and B.is_real_node() and C.is_real_node())
 
                 # Single right rotation
                 A.left = B.right
@@ -323,7 +323,7 @@ class AVLTree(object):
                 B = A.left
                 C = B.right
 
-                assert (A.is_real_node() and B.is_real_node() and C.is_real_node())  # maybe delete this line later
+                assert (A.is_real_node() and B.is_real_node() and C.is_real_node())
 
                 # Left rotation on B, then right rotation on A
                 A.left = C.right
