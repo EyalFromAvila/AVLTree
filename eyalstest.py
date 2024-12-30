@@ -31,4 +31,11 @@ def print_avl_tree(node, prefix="", is_left=True):
     # Print the left subtree
     print_avl_tree(node.left, prefix + ("    " if is_left else "│   "), True)
 # Call the print function
+print("original:")
 print_avl_tree(eyaltree.root)
+splitpoint = eyaltree.search(1)[0]
+left, right = eyaltree.split(splitpoint)
+print("left subtree:")
+print_avl_tree(left.root)
+print("right subtree:")
+print_avl_tree(right.root)

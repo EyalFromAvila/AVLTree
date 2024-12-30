@@ -7,7 +7,6 @@
 
 """A class represnting a node in an AVL tree"""
 
-
 class AVLNode(object):
     """Constructor, you are allowed to add more fields.
 
@@ -573,13 +572,21 @@ class AVLTree(object):
         curr = node.parent
         while curr:
             if curr.right == prev and curr.left.is_real_node():
+                #detach subtree from the original tree and join with left tree
                 temp_tree.root = curr.left
-                temp_tree.max = curr.left
+                temp_tree.root.parent = None
+                curr.left = self.external
+                temp_tree.max = temp_tree.root
                 left.join(temp_tree, curr.key, curr.value)
+
             if curr.left == prev and curr.right.is_real_node():
+                # detach subtree from original tree and join with right tree
                 temp_tree.root = curr.right
+                temp_tree.root.parent = None
+                curr.right = self.external
                 #to save complexity - will upadte max only once, in the end
                 right.join(temp_tree, curr.key, curr.value)
+
             prev = curr
             curr = curr.parent
 
