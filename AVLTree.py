@@ -554,8 +554,6 @@ class AVLTree(object):
     """
 
     def split(self, node):
-        #return self.rec_split(self.root, node.key) ### (Yasha's version, archived for now)
-
         #initiate the new trees
         left = AVLTree()
         left.root = node.left if node.left.is_real_node() else None
@@ -599,48 +597,6 @@ class AVLTree(object):
 
         return left, right
 
-    """
-    Helper function that does all the work recursively.
-    """
-
-    def rec_split(self, root, key):
-
-        if root is None or not root.is_real_node():
-            return None, None
-
-        if root.key == key:
-            # everything in root.left is < key
-            left_sub = root.left if root.left.is_real_node() else None
-            # everything in root.right is > key
-            right_sub = root.right if root.right.is_real_node() else None
-
-            # detach them from root
-            root.left = self.external
-            root.right = self.external
-
-            return left_sub, right_sub
-
-        elif root.key < key:
-            # root belongs to the left side
-            split_left, split_right = self.rec_split(root.right, key)
-            root.right = split_left if split_left else self.external
-            if root.right.is_real_node():
-                root.right.parent = root
-            self.recompute_heights(root)
-            if not root.balance() in [-1, 0, 1]:
-                self.rebalance(root)
-            return root, split_right  # 'root' is the new left subtree
-
-        else:  # root.key > key
-            # root belongs to the right side
-            split_left, split_right = self.rec_split(root.left, key)
-            root.left = split_right if split_right else self.external
-            if root.left.is_real_node():
-                root.left.parent = root
-            self.recompute_heights(root)
-            if not root.balance() in [-1, 0, 1]:
-                self.rebalance(root)
-            return split_left, root
 
     """returns an array representing dictionary 
 
