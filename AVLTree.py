@@ -77,7 +77,7 @@ class AVLTree(object):
     def __init__(self):
         self.root = None
         self.max = None
-        self.size = 0
+        self.tree_size = 0
         self.external = AVLNode(None, None)
         self.external.height = -1
 
@@ -197,11 +197,11 @@ class AVLTree(object):
             self.root = inserted_node
             self.root.left = self.root.right = self.external
             self.max = inserted_node
-            self.size = 1
+            self.tree_size = 1
             return inserted_node, 0, 0
         else:
 
-            self.size += 1
+            self.tree_size += 1
             return self.insert_as_child(self.root, inserted_node, 0)
 
     """
@@ -380,7 +380,7 @@ class AVLTree(object):
 
         # Starting from there do the insert
         inserted_node, downward_path, promotions = self.insert_as_child(current, new_node, 0)
-        self.size += 1
+        self.tree_size += 1
         return inserted_node, downward_path + upward_path, promotions
 
     """deletes node from the dictionary
@@ -423,7 +423,7 @@ class AVLTree(object):
             if not parent.balance() in [-1, 0, 1]:
                 self.rebalance(parent)  # Rebalance each ancestor node
 
-        self.size -= 1
+        self.tree_size -= 1
 
     """
     Helper function to replace a node in the tree with a new node.
@@ -478,7 +478,7 @@ class AVLTree(object):
         if not self.root:
             tree2.insert(key, val)
             self.root = tree2.root
-            self.size = tree2.size
+            self.tree_size = tree2.tree_size
             self.max = tree2.max
             self.external = tree2.external
             return
@@ -488,9 +488,9 @@ class AVLTree(object):
         taller_tree, shorter_tree = self.height_matters(tree2)
         k = AVLNode(key, val)
         self.max = big_keys_tree.max
-        self.size = self.size + tree2.size + 1
+        self.tree_size = self.tree_size + tree2.tree_size + 1
 
-        # Easy case: same size
+        # Easy case: same tree_size
         if abs(big_keys_tree.root.height - small_keys_tree.root.height) <= 1:
             k.left, k.right = small_keys_tree.root, big_keys_tree.root
             small_keys_tree.root.parent = k
@@ -608,12 +608,12 @@ class AVLTree(object):
         return self.in_order_plus(self.root)
 
     def in_order_plus(self, node):
-        if node is None:  # Base case: Empty subtree
+        if node is None or not node.is_real_node():  # Base case: Empty subtree
             return []
 
         # Combine results from left subtree, current node, and right subtree
         left_part = self.in_order_plus(node.left)
-        current_part = [(node.key, node.val)]  # The current node as a tuple
+        current_part = [(node.key, node.value)]  # The current node as a tuple
         right_part = self.in_order_plus(node.right)
 
         return left_part + current_part + right_part
@@ -634,7 +634,7 @@ class AVLTree(object):
     """
 
     def size(self):
-        return self.size
+        return self.tree_size
 
     """returns the root of the tree representing the dictionary
 
