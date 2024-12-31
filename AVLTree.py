@@ -52,7 +52,6 @@ def search_from_node(node, key):
         elif current.key < key:
             current = current.right
             depth += 1
-
 # helper for delete function
 def get_successor(node):
     current = node
@@ -117,9 +116,9 @@ class AVLTree(object):
             edges_passed += 1
 
         # Perform the regular search starting from this node
-        result_key, result_edges = self.search_from_node(current, key, edges_passed)
+        result_key, result_edges = search_from_node(current, key)
 
-        return result_key, 1 + result_edges
+        return result_key, edges_passed + result_edges
 
     """inserts a new node into the dictionary with corresponding key and value (starting at the root)
 
