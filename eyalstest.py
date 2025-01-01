@@ -2,20 +2,7 @@
 from AVLTree import *
 
 eyaltree = AVLTree()
-eyaltree.insert(1, 1)
-eyaltree.insert(2, 2)
-eyaltree.insert(3, 3)
-eyaltree.insert(4, 4)
-eyaltree.insert(5, 5)
-eyaltree.insert(6, 6)
-eyaltree.insert(7, 7)
-eyaltree.insert(8, 8)
-eyaltree.insert(9, 9)
-eyaltree.insert(10, 10)
-eyaltree.insert(11, 11)
-eyaltree.insert(12, 12)
-eyaltree.insert(13, 13)
-
+eyaltree.insert(1,1)
 
 
 # Print AVL tree
@@ -31,11 +18,3 @@ def print_avl_tree(node, prefix="", is_left=True):
     # Print the left subtree
     print_avl_tree(node.left, prefix + ("    " if is_left else "│   "), True)
 # Call the print function
-print("original:")
-print_avl_tree(eyaltree.root)
-splitpoint = eyaltree.search(1)[0]
-left, right = eyaltree.split(splitpoint)
-print("left subtree:")
-print_avl_tree(left.root)
-print("right subtree:")
-print_avl_tree(right.root)
